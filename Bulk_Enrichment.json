@@ -1,0 +1,838 @@
+{
+  "name": "Bulk Enrichment",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "125c3b73-c7cf-4348-8fab-0ab91c398a2e",
+              "leftValue": "={{ $json.total }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "61bde4ab-e7f7-4435-9879-a62395e1fe23",
+      "name": "Check Results",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "results[0].properties.hs_object_id, , results[0].properties.domain",
+        "options": {}
+      },
+      "id": "fdb55bcb-dbba-4350-8906-d99c582caacc",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e062be00-cb8c-44ed-be0f-fabbc77f33dd",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        0,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.amplemarket.com/companies/find",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer AmplemarketAPIKEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"domain\": \"{{ $json.results.properties.domain }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "8aedcd09-e544-4917-9f59-375a1007687e",
+      "name": "Amplemarket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23db88ce-b31f-4bd5-a055-3589c6b9eae6",
+              "name": "amplemarket_id",
+              "value": "={{ $('Data to Json').item.json.data.id }}",
+              "type": "string"
+            },
+            {
+              "id": "158947db-6719-499d-ab1e-7ea4996333a0",
+              "name": "linkedin_company_page",
+              "value": "={{ $('Data to Json').item.json.data.linkedin_url }}",
+              "type": "string"
+            },
+            {
+              "id": "bc810784-97a9-40c7-82a7-939a13f61af7",
+              "name": "overview",
+              "value": "={{ $('Data to Json').item.json.data.overview }}",
+              "type": "string"
+            },
+            {
+              "id": "67d1d1d0-573c-4c7b-b712-096d91b955e3",
+              "name": "founded_year",
+              "value": "={{ $('Data to Json').item.json.data.founded_year }}",
+              "type": "number"
+            },
+            {
+              "id": "853f5a20-41b5-4034-b494-6150d90d82a1",
+              "name": "traffic_rank",
+              "value": "={{ $('Data to Json').item.json.data.traffic_rank }}",
+              "type": "number"
+            },
+            {
+              "id": "9d44981b-2da8-450f-b28f-9d967b5c7942",
+              "name": "company_type",
+              "value": "={{ $('Data to Json').item.json.data.type }}",
+              "type": "string"
+            },
+            {
+              "id": "7e5d843b-ec56-42a9-a7a7-65b18a8f78fa",
+              "name": "apollo_total_funding",
+              "value": "={{ $('Data to Json').item.json.data.total_funding }}",
+              "type": "number"
+            },
+            {
+              "id": "91b7389e-8aa5-4172-a6e7-4ceb3fc12fb4",
+              "name": "latest_funding_stage",
+              "value": "={{ $('Data to Json').item.json.data.latest_funding_stage }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ca6410-65f0-4215-b425-a8fc6fb71941",
+              "name": "numberofemployees",
+              "value": "={{ $('Data to Json').item.json.data.estimated_number_of_employees }}",
+              "type": "number"
+            },
+            {
+              "id": "eb389cae-7819-41b2-85ea-635a52cbd870",
+              "name": "number_of_followers",
+              "value": "={{ $('Data to Json').item.json.data.followers }}",
+              "type": "number"
+            },
+            {
+              "id": "1daa00b0-265a-4c8f-b02b-8a1f875b6bd1",
+              "name": "amplemarket_company_size",
+              "value": "={{ $('Data to Json').item.json.data.size }}",
+              "type": "string"
+            },
+            {
+              "id": "053e1f20-6352-4d6e-9e35-85ab7ed55dc6",
+              "name": "industry_details",
+              "value": "={{ $('Data to Json').item.json.data.industry }}",
+              "type": "string"
+            },
+            {
+              "id": "6e310d20-88fc-4b9a-b2db-a9da07bbebe3",
+              "name": "is_b2b",
+              "value": "={{ $('Data to Json').item.json.data.is_b2b }}",
+              "type": "boolean"
+            },
+            {
+              "id": "fa58ec6a-aa62-464b-8d13-e61130bf4257",
+              "name": "is_b2c",
+              "value": "={{ $('Data to Json').item.json.data.is_b2c }}",
+              "type": "boolean"
+            },
+            {
+              "id": "0314f8b1-18d6-46e8-a8ff-c346cac88d5d",
+              "name": "estimated_annual_revenue",
+              "value": "={{ $('Data to Json').item.json.data.estimated_revenue }}",
+              "type": "string"
+            },
+            {
+              "id": "32cd61dd-a620-457d-9f54-a65f2d0f93ad",
+              "name": "temp_latest_funding_date",
+              "value": "={{ $('Data to Json').item.json.data.latest_funding_date }}",
+              "type": "string"
+            },
+            {
+              "id": "71eb8eee-b6f9-4fad-a371-0145c0aa10cb",
+              "name": "temp_sic_code",
+              "value": "={{ $('Data to Json').item.json.data.sic_codes }}",
+              "type": "array"
+            },
+            {
+              "id": "7f8e4da4-75fa-44c6-9871-1d5caf349bc2",
+              "name": "temp_apollo_keywords",
+              "value": "={{ $('Data to Json').item.json.data.keywords }}",
+              "type": "array"
+            },
+            {
+              "id": "22a99d65-75ff-4e9c-b780-117581c3c62e",
+              "name": "city",
+              "value": "={{ $('Data to Json').item.json.data.location_details.city }}",
+              "type": "string"
+            },
+            {
+              "id": "84ac6891-db4d-4ab1-aa0f-3f8f474196b0",
+              "name": "state",
+              "value": "={{ $('Data to Json').item.json.data.location_details.state }}",
+              "type": "string"
+            },
+            {
+              "id": "c2c9833f-3b53-4757-8e0e-53fb9eee8d31",
+              "name": "country",
+              "value": "={{ $('Data to Json').item.json.data.location_details.country }}",
+              "type": "string"
+            },
+            {
+              "id": "9928cbf6-0198-4948-995d-7f4340fd5387",
+              "name": "temp_technologies",
+              "value": "={{ $('Data to Json').item.json.data.technologies }}",
+              "type": "array"
+            },
+            {
+              "id": "9ff47021-44e4-4bdb-ac74-ada8da02410d",
+              "name": "companyID",
+              "value": "={{ $('Data to Json').item.json.cid }}",
+              "type": "number"
+            },
+            {
+              "id": "759268da-6d50-452f-8d67-1e4e0e098cfc",
+              "name": "e_amplemarket_company_size",
+              "value": "={{ $json.properties.amplemarket_company_size }}",
+              "type": "string"
+            },
+            {
+              "id": "0e62c67c-8080-4190-a791-ac3f6484d308",
+              "name": "e_amplemarket_id",
+              "value": "={{ $json.properties.amplemarket_id }}",
+              "type": "string"
+            },
+            {
+              "id": "c1bc8ca8-7be7-4a14-9452-c31781351602",
+              "name": "e_apollo_keywords",
+              "value": "={{ $json.properties.apollo_keywords }}",
+              "type": "string"
+            },
+            {
+              "id": "1e758e46-f522-435c-b457-d22d1388335a",
+              "name": "e_apollo_total_funding",
+              "value": "={{ $json.properties.apollo_total_funding }}",
+              "type": "number"
+            },
+            {
+              "id": "7fb22a36-f46b-40ca-b1eb-b51e99ac022a",
+              "name": "e_city",
+              "value": "={{ $json.properties.city }}",
+              "type": "string"
+            },
+            {
+              "id": "aa6c2e3c-c5d2-416f-87b7-4230b9e369c3",
+              "name": "e_company_type",
+              "value": "={{ $json.properties.company_type }}",
+              "type": "string"
+            },
+            {
+              "id": "429a5e62-7b76-46e2-82f1-11742a0bff8a",
+              "name": "e_country",
+              "value": "={{ $json.properties.country }}",
+              "type": "string"
+            },
+            {
+              "id": "0e6e23ae-8c72-4054-b839-8ba73963c3c0",
+              "name": "e_estimated_annual_revenue",
+              "value": "={{ $json.properties.estimated_annual_revenue }}",
+              "type": "string"
+            },
+            {
+              "id": "8e9e8839-7925-4acc-b83b-98df7aaad032",
+              "name": "e_founded_year",
+              "value": "={{ $json.properties.founded_year }}",
+              "type": "number"
+            },
+            {
+              "id": "c41b066a-314f-416c-8f3c-ae1d843560f9",
+              "name": "e_industry_details",
+              "value": "={{ $json.properties.industry_details }}",
+              "type": "string"
+            },
+            {
+              "id": "47a61708-fac0-4f72-a3b0-0db9c56c3a9a",
+              "name": "e_is_b2b",
+              "value": "={{ $json.properties.is_b2b }}",
+              "type": "boolean"
+            },
+            {
+              "id": "1833212f-8ea8-450f-bc37-5d577736ce16",
+              "name": "e_is_b2c",
+              "value": "={{ $json.properties.is_b2c }}",
+              "type": "boolean"
+            },
+            {
+              "id": "da72dd9c-c44c-4189-a60f-eaa8aae56cdf",
+              "name": "e_latest_funding_date",
+              "value": "={{ $json.properties.latest_funding_date }}",
+              "type": "string"
+            },
+            {
+              "id": "9f3f0b82-02d6-4b60-9080-d54ffb0b6837",
+              "name": "e_latest_funding_stage",
+              "value": "={{ $json.properties.latest_funding_stage }}",
+              "type": "string"
+            },
+            {
+              "id": "67de0cf2-ec6a-4212-9d7c-308c8a2480e5",
+              "name": "e_linkedin_company_page",
+              "value": "={{ $json.properties.linkedin_company_page }}",
+              "type": "string"
+            },
+            {
+              "id": "05db68bd-1b90-483c-85d4-ca7251bddcce",
+              "name": "e_number_of_followers",
+              "value": "={{ $json.properties.number_of_followers }}",
+              "type": "number"
+            },
+            {
+              "id": "986319a7-c125-484d-8dd2-55119a975d7b",
+              "name": "e_numberofemployees",
+              "value": "={{ $json.properties.numberofemployees }}",
+              "type": "number"
+            },
+            {
+              "id": "82d46fae-eb8a-46ba-a1b8-1cf929a5f3e9",
+              "name": "e_overview",
+              "value": "={{ $json.properties.overview }}",
+              "type": "string"
+            },
+            {
+              "id": "d7df274b-372b-4f54-8cd6-a596e82ba692",
+              "name": "e_sic_code",
+              "value": "={{ $json.properties.sic_code }}",
+              "type": "string"
+            },
+            {
+              "id": "bec83329-eea6-4082-8dcd-21c25fcaf761",
+              "name": "e_state",
+              "value": "={{ $json.properties.state }}",
+              "type": "string"
+            },
+            {
+              "id": "039f42e8-ba22-4505-86b8-5babf32c1db5",
+              "name": "e_technologies",
+              "value": "={{ $json.properties.technologies }}",
+              "type": "string"
+            },
+            {
+              "id": "1f9d9e13-45a8-4048-b5c0-8192bd2cedaa",
+              "name": "e_traffic_rank",
+              "value": "={{ $json.properties.traffic_rank }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "068880ba-bf76-497c-bac6-21dc4cd052f9",
+      "name": "Mapping",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1140,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "beaf6e84-a714-4fd6-89e4-ca74506e095b",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "=company_not_found",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "4b822f6b-c0b7-4ad1-90f5-69e19a099559",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "unsupported_value",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5f1154cf-b0dd-4737-b1be-c01a790fa5a7",
+      "name": "check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json;\nconst properties = {};\nconst defaults = {\n    companyID: data.companyID,\n    amplemarket_id: data.e_amplemarket_id,\n    linkedin_company_page: data.e_linkedin_company_page,\n    overview: data.e_overview,\n    founded_year: data.e_founded_year,\n    latest_funding_date: data.e_latest_funding_date,\n    technologies: data.e_technologies,\n    apollo_keywords: data.e_apollo_keywords,\n    sic_code: data.e_sic_code,\n    traffic_rank: data.e_traffic_rank,\n    company_type: data.e_company_type,\n    apollo_total_funding: data.e_apollo_total_funding,\n    latest_funding_stage: data.e_latest_funding_stage,\n    numberofemployees: data.e_numberofemployees,\n    number_of_followers: data.e_number_of_followers,\n    amplemarket_company_size: data.e_amplemarket_company_size,\n    industry_details: data.e_industry_details,\n    is_b2b: data.e_is_b2b,\n    is_b2c: data.e_is_b2c,\n    estimated_annual_revenue: data.e_estimated_annual_revenue,\n    city: data.e_city,\n    state: data.e_state,\n    country: data.e_country,\n};\nconst hubspotDefaults = {\n    companyID: \"defaultCompanyID\",\n    amplemarket_id: \"not available\",\n    linkedin_company_page: \"not available\",\n    overview: \"not available\",\n    founded_year: 2000,\n    latest_funding_date: \"2000-01-01\",\n    technologies: \"not available\",\n    apollo_keywords: \"not available\",\n    sic_code: \"not available\",\n    traffic_rank: 0,\n    company_type: \"Unknown\",\n    apollo_total_funding: 0,\n    latest_funding_stage: \"not available\",\n    numberofemployees: 0,\n    number_of_followers: 0,\n    amplemarket_company_size: \"Unknown\",\n    industry_details: \"not available\",\n    is_b2b: false,\n    is_b2c: false,\n    estimated_annual_revenue: \"0\",\n    city: \"not available\",\n    state: \"not available\",\n    country: \"not available\",\n};\nfor (let key in defaults) {\n    if (defaults[key] === null || defaults[key] === undefined || defaults[key] === \"\") {\n        defaults[key] = hubspotDefaults[key];\n    }\n}\nproperties.companyID = data.companyID ?? defaults.companyID;\nproperties.amplemarket_id = data.amplemarket_id ?? defaults.amplemarket_id;\nproperties.linkedin_company_page = data.linkedin_company_page ?? defaults.linkedin_company_page;\nproperties.overview = Array.isArray(data.overview) \n    ? data.overview.join(' ').replace(/[\\t\\n\\r]+/g, ' ').replace(/[^a-zA-Z0-9\\s]/g, '').trim()\n    : data.overview \n        ? data.overview.replace(/[\\t\\n\\r]+/g, ' ').replace(/[^a-zA-Z0-9\\s]/g, '').trim()\n        : defaults.overview;\nproperties.founded_year = data.founded_year ?? defaults.founded_year;\nproperties.latest_funding_date = data.latest_funding_date ?? defaults.latest_funding_date;\nproperties.technologies = Array.isArray(data.temp_technologies) \n    ? data.temp_technologies.join(', ').replace(/[\\t\\n\\r]+/g, ' ').replace(/[^a-zA-Z0-9,\\s]/g, '').trim()\n    : data.temp_technologies \n        ? data.temp_technologies.replace(/[\\t\\n\\r]+/g, ' ').replace(/[^a-zA-Z0-9,\\s]/g, '').trim()\n        : defaults.technologies;\nproperties.apollo_keywords = Array.isArray(data.temp_apollo_keywords) \n    ? data.temp_apollo_keywords.join(', ').replace(/[\\t\\n\\r]+/g, ' ').replace(/[^a-zA-Z0-9,\\s]/g, '').trim()\n    : data.temp_apollo_keywords \n        ? data.temp_apollo_keywords.replace(/[\\t\\n\\r]+/g, ' ').replace(/[^a-zA-Z0-9,\\s]/g, '').trim()\n        : defaults.apollo_keywords;\nproperties.sic_code = data.temp_sic_code\n  ? data.temp_sic_code.join(', ')\n  : defaults.sic_code;\nproperties.traffic_rank = data.traffic_rank ?? defaults.traffic_rank;\nproperties.company_type = data.company_type ?? defaults.company_type;\nproperties.apollo_total_funding = data.apollo_total_funding ?? defaults.apollo_total_funding;\nproperties.latest_funding_stage = data.latest_funding_stage ?? defaults.latest_funding_stage;\nproperties.numberofemployees = data.numberofemployees ?? defaults.numberofemployees;\nproperties.number_of_followers = data.number_of_followers ?? defaults.number_of_followers;\nproperties.amplemarket_company_size = data.amplemarket_company_size ?? defaults.amplemarket_company_size;\nproperties.industry_details = data.industry_details ?? defaults.industry_details;\nproperties.is_b2b = data.is_b2b !== undefined ? data.is_b2b : defaults.is_b2b;\nproperties.is_b2c = data.is_b2c !== undefined ? data.is_b2c : defaults.is_b2c;\nproperties.estimated_annual_revenue = data.estimated_annual_revenue ?? defaults.estimated_annual_revenue;\nproperties.city = data.city ?? defaults.city;\nproperties.state = data.state ?? defaults.state;\nproperties.country = data.country ?? defaults.country;\nproperties.currentDateTime = new Date().toISOString();\nreturn [{ json: { properties } }];\n"
+      },
+      "id": "7961f54f-acbf-4f46-bfb5-0ac095c15aa7",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer HubSpotAPIKEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"filterGroups\": [\n    {\n      \"filters\": [\n        {\n          \"propertyName\": \"enrich_with_amplemarket\",\n          \"operator\": \"EQ\",\n          \"value\": \"needs_enrichment\"\n        }\n      ]\n    }\n  ],\n  \"properties\": [\"domain\"],\n  \"limit\": 100\n}",
+        "options": {}
+      },
+      "id": "1cdc117c-724b-4aa8-8e34-ab153e10d7ec",
+      "name": "Company Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -600,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9b765c63-d692-4274-91d6-e144a0642ea2",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "object"
+            },
+            {
+              "id": "5751c751-2033-49ac-8c8e-5d95e6be5198",
+              "name": "cid",
+              "value": "={{ $('Split Out').item.json.results.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bf433554-d37f-4bfb-ab74-54d8552d3b61",
+      "name": "Data to Json",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        600,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.hubapi.com/crm/v3/objects/companies/{{ $json.properties.companyID }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer HubSpotAPIKEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"properties\": {\n    \"amplemarket_id\": \"{{ $json.properties.amplemarket_id }}\",\n    \"linkedin_company_page\": \"{{ $json.properties.linkedin_company_page }}\",\n    \"is_b2b\": {{ $json.properties.is_b2b }},\n    \"is_b2c\": {{ $json.properties.is_b2c }},\n    \"traffic_rank\": {{ $json.properties.traffic_rank }},\n    \"founded_year\": {{ $json.properties.founded_year }},\n    \"latest_funding_date\": \"{{ $json.properties.latest_funding_date }}\",\n    \"company_type\": \"{{ $json.properties.company_type }}\",\n    \"numberofemployees\": {{ $json.properties.numberofemployees }},\n    \"number_of_followers\": {{ $json.properties.number_of_followers }},\n    \"amplemarket_company_size\": \"{{ $json.properties.amplemarket_company_size }}\",\n    \"latest_funding_stage\": \"{{ $json.properties.latest_funding_stage }}\",\n    \"industry_details\": \"{{ $json.properties.industry_details }}\",\n    \"city\": \"{{ $json.properties.city }}\",\n    \"state\": \"{{ $json.properties.state }}\",\n    \"country\": \"{{ $json.properties.country }}\",\n    \"sic_code\": \"{{ $json.properties.sic_code }}\",\n    \"apollo_total_funding\": {{ $json.properties.apollo_total_funding }},\n    \"estimated_annual_revenue\": \"{{ $json.properties.estimated_annual_revenue }}\",\n    \"technologies\": \"{{ $json.properties.technologies }}\",\n    \"apollo_keywords\": \"{{ $json.properties.apollo_keywords }}\",\n    \"overview\": \"{{ $json.properties.overview }}\",\n    \"enrich_with_amplemarket\": \"enriched_today\",\n    \"amplemarket_enrichment_date\": \"{{ $json.properties.currentDateTime }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "570d0be3-397f-47bb-9af1-ef3ed9e5f372",
+      "name": "Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.hubapi.com/crm/v3/objects/companies/{{ $('Split Out').item.json.results.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer HubSpotAPIKEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"properties\": {\n    \"enrich_with_amplemarket\": \"failed\"\n  }\n}",
+        "options": {}
+      },
+      "id": "568cb00b-43ef-4409-be84-bb29b9f2f7e0",
+      "name": "Fail",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        180,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 0.1
+      },
+      "id": "ee1808fa-c6c3-4ccc-bd56-6db5a4eb5f47",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -80
+      ],
+      "webhookId": "461e7e70-4323-4829-8c27-af6bbc70f299"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.hubapi.com/crm/v3/objects/companies/{{ $json.cid }}?properties=amplemarket_id,linkedin_company_page,overview,founded_year,traffic_rank,company_type,apollo_total_funding,latest_funding_stage,numberofemployees,number_of_followers,amplemarket_company_size,industry_details,is_b2b,is_b2c,estimated_annual_revenue,latest_funding_date,sic_code,apollo_keywords,city,state,country,technologies",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer HubSpotAPIKEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b105bf36-a94a-4dcb-9100-935892da5901",
+      "name": "Get Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        760,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "43a60991-ad6c-4a4d-a1c3-f5cdb138d92f",
+              "name": "properties",
+              "value": "={{ $json.properties }}",
+              "type": "object"
+            },
+            {
+              "id": "5c3d2d2e-7b76-40fb-b63e-db037bb4fa35",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b07e5d38-0049-491f-a8ad-aa25b63307d4",
+      "name": "To Json",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        940,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "9df64ab2-9f07-41f5-af38-6ff41874cbab",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        -60
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Check Results": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Amplemarket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Amplemarket": {
+      "main": [
+        [
+          {
+            "node": "check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapping": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check": {
+      "main": [
+        [
+          {
+            "node": "Data to Json",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Search": {
+      "main": [
+        [
+          {
+            "node": "Check Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data to Json": {
+      "main": [
+        [
+          {
+            "node": "Get Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Details": {
+      "main": [
+        [
+          {
+            "node": "To Json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "To Json": {
+      "main": [
+        [
+          {
+            "node": "Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Company Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ba6a7c7f-a637-4af4-8ecc-5256faa04025",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f35844c20bd7f8456f907e3b5a901af1cf08cec7fee985138953357fd244e5bd"
+  },
+  "id": "XpdGjnB9D30Q7IL7",
+  "tags": []
+}
