@@ -1,5 +1,5 @@
 {
-  "name": "Bulk Enrichment",
+  "name": "Bulk Enrichment via Domain",
   "nodes": [
     {
       "parameters": {
